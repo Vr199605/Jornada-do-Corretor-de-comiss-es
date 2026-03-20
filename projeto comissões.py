@@ -138,6 +138,8 @@ with tabs[2]:
         st.markdown("### O Gatilho do Recebimento")
         st.write("""
         O **Quiver** aguarda a baixa do extrato. Se a comissão prevista for **R$ 1.000,00**, mas a parcela do cliente for **R$ 400,00**:
+        """)
+        st.markdown("""
         1. O sistema baixa **R$ 400,00** no Mês 01 (**Valor X**).
         2. O sistema deixa **R$ 600,00** pendentes para os meses subsequentes (**Valor Y**).
         """)
@@ -153,7 +155,7 @@ with tabs[2]:
                        column_config={"Recebimento": st.column_config.NumberColumn(format="R$ %.2f")})
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- CAPÍTULO 4: SIMULADOR COMPARATIVO (ATUALIZADO) ---
+# --- CAPÍTULO 4: SIMULADOR COMPARATIVO ---
 with tabs[3]:
     st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
     st.markdown("## Simulação: Valor Total vs. Valor Parcelado")
@@ -164,7 +166,6 @@ with tabs[3]:
         val_com_perc_sim = st.number_input("Comissão do Corretor (%)", value=20.0, step=1.0, key="sim_comp_perc")
         com_total_anual_sim = val_premio_anual * (val_com_perc_sim / 100)
         
-        # ESCOLHA DA OPÇÃO
         modelo_pagto = st.radio("Escolha o Modelo de Recebimento:", ["Total (Esgotamento no Mês 1)", "Parcelado"])
         
         if modelo_pagto == "Parcelado":
