@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 
@@ -72,7 +73,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["01. CONCEITO", "02. MERCADO", "03. REGR
 with tab1:
     st.markdown("""
     <div class="ebook-section">
-        <h2 style="font-family: 'Montserrat';">O Alicerce Estratégico</h2>
+        <h2 style="font-family: 'Montserrat'; color: #FFFFFF;">O Alicerce Estratégico</h2>
         <p>A <b>tabela de comissão de corretora de seguros</b> define os percentuais que o corretor recebe por cada apólice vendida. 
         Estes valores variam conforme o ramo (vida, automóvel, empresarial, saúde etc.), de acordo com a seguradora e o modelo de atuação do corretor.</p>
         <p>Ela é essencial para <b>organizar os repasses</b>, prever ganhos e manter a gestão financeira da corretora em dia, funcionando como um GPS de rentabilidade.</p>
@@ -86,7 +87,7 @@ with tab1:
         st.success("**Pelas Seguradoras:** Para definir os percentuais autorizados em cada produto e controlar canais.")
 
 with tab2:
-    st.markdown('<div class="ebook-section"><h2 style="font-family: Montserrat;">Benchmark de Mercado 2026</h2>', unsafe_allow_html=True)
+    st.markdown('<div class="ebook-section"><h2 style="font-family: Montserrat; color: #FFFFFF;">Benchmark de Mercado 2026</h2>', unsafe_allow_html=True)
     st.write("Percentuais médios praticados de acordo com o tipo de seguro:")
 
     dados_mercado = [
@@ -109,7 +110,7 @@ with tab2:
 with tab3:
     st.markdown("""
     <div class="ebook-section">
-        <h2 style="font-family: Montserrat;">As 3 Regras de Recebimento</h2>
+        <h2 style="font-family: Montserrat; color: #FFFFFF;">As 3 Regras de Recebimento</h2>
         <p>A engenharia financeira da corretora depende de como a receita entra no caixa:</p>
     </div>
     """, unsafe_allow_html=True)
@@ -124,19 +125,25 @@ with tab3:
 
 with tab4:
     st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
-    st.h2("Engenharia de Esgotamento & Estorno")
+    st.markdown("<h2 style='font-family: Montserrat; color: #FFFFFF;'>Engenharia de Esgotamento & Estorno</h2>", unsafe_allow_html=True)
     st.write("""
     No mercado de seguros e previdência, a comissão por esgotamento (ou antecipada com estorno) é uma prática onde a seguradora 
     antecipa ao corretor uma parte ou o total da comissão anual logo no início da vigência.
     """)
     
-    st.markdown("### 1. Normas da SUSEP")
+    st.markdown("### 1. O Conceito de Esgotamento")
+    st.write("""
+    Diferente da comissão mensal (onde o corretor recebe conforme o cliente paga), no modelo de esgotamento a seguradora paga uma porcentagem sobre o prêmio anual de uma só vez. 
+    A **regra de esgotamento** entra em vigor quando o contrato é cancelado antes do período previsto.
+    """)
+
+    st.markdown("### 2. Normas da SUSEP")
     st.write("""
     A **Circular SUSEP nº 612/2020** estabelece a transparência: o corretor deve informar o montante da comissão se solicitado. 
     As seguradoras possuem respaldo legal para o **Direito ao Estorno** caso o prêmio não seja integralmente pago.
     """)
 
-    st.markdown("### 2. A Lógica do Cálculo (Pro-rata Temporis)")
+    st.markdown("### 3. Como é feito o cálculo? (Pro-rata Temporis)")
     st.write("Se o contrato é cancelado antes do período previsto, a corretora deve devolver a parte proporcional à seguradora.")
     
     st.markdown('<div class="formula-box">', unsafe_allow_html=True)
@@ -154,7 +161,7 @@ with tab4:
         t_d = st.slider("Meses Decorridos (até o cancelamento)", 0, int(t_t), 3)
         t_r = t_t - t_d
         
-        c_e = c_a * (t_r / t_t)
+        c_e = c_a * (t_r / t_t) if t_t > 0 else 0
         
     with col_e2:
         st.markdown(f"""
@@ -168,12 +175,11 @@ with tab4:
         **Detalhamento do Cenário:**
         - **Período de Estorno:** {t_r} meses restantes.
         - **Impacto:** O valor será descontado das suas próximas comissões ("Estorno em Conta Corrente").
-        - **Atenção:** Verifique se o estorno é sobre o valor bruto (considerando impostos já pagos).
         """)
 
     with st.expander("💡 Pontos de Atenção em Previdência e Vida"):
         st.write("""
-        - **Prazo de Gatilho:** Algumas cláusulas tornam a comissão irretratável após 24 meses.
+        - **Prazo de Gatilho:** Algumas cláusulas tornam a comissão irretratável após um certo período (ex: 24 meses).
         - **Impostos:** O estorno é feito sobre o bruto; cuidado com a contabilidade de impostos já recolhidos no mês 1.
         - **Previdência:** Comum em aportes únicos ou planos com carregamento na saída.
         """)
@@ -182,13 +188,13 @@ with tab4:
 with tab5:
     st.markdown("""
     <div class="ebook-section">
-        <h2 style="font-family: Montserrat;">Governança & Escala</h2>
+        <h2 style="font-family: Montserrat; color: #FFFFFF;">Governança & Escala</h2>
         <p>Entender a tabela é o primeiro passo. Escalar exige foco em 4 fatores essenciais:</p>
         <ol>
             <li><b>Volume de Produção:</b> Bonificações por metas atingidas junto às seguradoras.</li>
             <li><b>Mix de Carteira:</b> Equilibrar produtos massificados (Auto) com alto valor agregado (Vida/Empresarial).</li>
-            <li><b>Negociação:</b> Corretores experientes com baixa sinistralidade negociam 'over-comission'.</li>
-            <li><b>Tecnologia:</b> A conferência automática evita perdas que chegam a 15% do faturamento anual.</li>
+            <li><b>Negociação:</b> Corretores experientes negociam 'over-comission'.</li>
+            <li><b>Tecnologia:</b> A conferência automática evita perdas operacionais.</li>
         </ol>
         <p><i>"No mercado de alta performance, a comissão é o resultado de uma engenharia bem executada."</i></p>
     </div>
