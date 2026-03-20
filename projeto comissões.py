@@ -4,7 +4,7 @@ import pandas as pd
 # 1. Configuração de Estética e Layout High-End
 st.set_page_config(page_title="Gestão de Comissões | Padrão Globus", layout="wide", page_icon="💎")
 
-# CSS Customizado Ultra-Premium (Dark Mode & Glassmorphism)
+# CSS Customizado Ultra-Premium (Foco em Experiência de E-book)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&family=Inter:wght@300;400;600&display=swap');
@@ -12,7 +12,6 @@ st.markdown("""
     html, body, [class*="css"] { font-family: 'Inter', sans-serif; background-color: #0F172A; }
     .stApp { background: radial-gradient(circle at top right, #1E293B, #0F172A); color: #F8FAFC; }
     
-    /* Títulos */
     .main-title { 
         font-family: 'Montserrat', sans-serif; 
         font-weight: 700; font-size: 3.2rem; 
@@ -22,7 +21,6 @@ st.markdown("""
     }
     .sub-title { color: #64748B; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; font-weight: 600; }
 
-    /* Cards Estilo Glassmorphism */
     .ebook-section {
         background: rgba(30, 41, 59, 0.4);
         padding: 40px; border-radius: 24px;
@@ -30,7 +28,6 @@ st.markdown("""
         backdrop-filter: blur(12px); margin-bottom: 30px;
     }
 
-    /* Regras de Comissão */
     .regra-card {
         padding: 25px; border-radius: 16px;
         background: rgba(255, 255, 255, 0.03);
@@ -38,16 +35,21 @@ st.markdown("""
     }
     .regra-card h4 { color: #3B82F6; margin-top: 0; font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
     
-    /* Métricas Customizadas */
     .metric-card {
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
-        padding: 25px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.3);
-        text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        padding: 25px; border-radius: 20px; border: 1px solid rgba(248, 113, 113, 0.3);
+        text-align: center;
     }
-    .metric-val { font-size: 2.2rem; font-weight: 700; color: #FFFFFF; margin: 0; }
-    .metric-label { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+    .metric-val { font-size: 2.2rem; font-weight: 700; color: #F87171; margin: 0; }
+    .metric-label { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 2px; }
 
-    /* Tabs Customizadas */
+    .formula-box {
+        background: rgba(0,0,0,0.2);
+        padding: 20px; border-radius: 12px;
+        border: 1px dashed rgba(255,255,255,0.1);
+        text-align: center; margin: 20px 0;
+    }
+
     .stTabs [data-baseweb="tab-list"] { gap: 30px; }
     .stTabs [data-baseweb="tab"] {
         height: 60px; background: transparent !important; color: #94A3B8 !important;
@@ -65,7 +67,7 @@ st.markdown('<h1 class="main-title">A Bíblia da Comissão</h1>', unsafe_allow_h
 st.markdown('<p class="sub-title">Inteligência Financeira & Engenharia de Recebimento</p>', unsafe_allow_html=True)
 
 # --- CAPÍTULOS ---
-tab1, tab2, tab3, tab4 = st.tabs(["01. CONCEITO", "02. MERCADO", "03. FLUXO DE CAIXA", "04. GOVERNANÇA"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["01. CONCEITO", "02. MERCADO", "03. REGRAS", "04. ESGOTAMENTO & ESTORNO", "05. GOVERNANÇA"])
 
 with tab1:
     st.markdown("""
@@ -108,7 +110,7 @@ with tab3:
     st.markdown("""
     <div class="ebook-section">
         <h2 style="font-family: Montserrat;">As 3 Regras de Recebimento</h2>
-        <p>A engenharia financeira da corretora é ditada por como a comissão entra no caixa:</p>
+        <p>A engenharia financeira da corretora depende de como a receita entra no caixa:</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -120,62 +122,68 @@ with tab3:
     with r3:
         st.markdown('<div class="regra-card" style="border-top-color: #93C5FD;"><h4>ESGOTAMENTO</h4>Antecipação total da receita concentrada nos meses iniciais da vigência.</div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    # SIMULADOR INTELIGENTE (SEM PLOTLY)
+with tab4:
     st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
-    st.subheader("Simulador de Engenharia Financeira")
+    st.h2("Engenharia de Esgotamento & Estorno")
+    st.write("""
+    No mercado de seguros e previdência, a comissão por esgotamento (ou antecipada com estorno) é uma prática onde a seguradora 
+    antecipa ao corretor uma parte ou o total da comissão anual logo no início da vigência.
+    """)
     
-    cs1, cs2 = st.columns([1, 2])
-    with cs1:
-        v_total = st.number_input("Comissão Total (R$)", value=4800.0, step=100.0)
-        regra_f = st.selectbox("Selecione a Regra", ["Total", "Parcelado", "Esgotamento"])
-        
-        if regra_f == "Esgotamento":
-            n_esg = st.number_input("Esgotar em quantos meses?", min_value=1, value=4)
-            vig = st.number_input("Vigência (Meses)", min_value=n_esg, value=12)
-        else:
-            vig = st.number_input("Vigência (Meses)", min_value=1, value=12)
-            n_esg = 1
+    st.markdown("### 1. Normas da SUSEP")
+    st.write("""
+    A **Circular SUSEP nº 612/2020** estabelece a transparência: o corretor deve informar o montante da comissão se solicitado. 
+    As seguradoras possuem respaldo legal para o **Direito ao Estorno** caso o prêmio não seja integralmente pago.
+    """)
 
-    # Cálculos
-    fluxo = []
-    for m in range(1, vig + 1):
-        if regra_f == "Total":
-            v = v_total if m == 1 else 0
-        elif regra_f == "Parcelado":
-            v = v_total / vig
-        else: # Esgotamento
-            v = v_total / n_esg if m <= n_esg else 0
-        fluxo.append({"Mês": f"Mês {m:02d}", "Recebimento": v, "Percentual": (v/v_total)*100})
-
-    df_f = pd.DataFrame(fluxo)
-
-    with cs2:
-        # Métricas Estilizadas
-        col_m1, col_m2 = st.columns(2)
-        with col_m1:
-            st.markdown(f'<div class="metric-card"><p class="metric-label">Entrada Inicial</p><p class="metric-val">R$ {fluxo[0]["Recebimento"]:,.2f}</p></div>', unsafe_allow_html=True)
-        with col_m2:
-            st.markdown(f'<div class="metric-card"><p class="metric-label">Período de Receita</p><p class="metric-val">{n_esg if regra_f=="Esgotamento" else (1 if regra_f=="Total" else vig)} Meses</p></div>', unsafe_allow_html=True)
-        
-        st.write("")
-        # Tabela com Gráfico Nativo (BarChartColumn)
-        st.data_editor(
-            df_f,
-            column_config={
-                "Recebimento": st.column_config.NumberColumn("Valor (R$)", format="R$ %.2f"),
-                "Percentual": st.column_config.BarChartColumn("Peso no Caixa (%)", y_min=0, y_max=100)
-            },
-            hide_index=True, use_container_width=True, disabled=True
-        )
+    st.markdown("### 2. A Lógica do Cálculo (Pro-rata Temporis)")
+    st.write("Se o contrato é cancelado antes do período previsto, a corretora deve devolver a parte proporcional à seguradora.")
+    
+    st.markdown('<div class="formula-box">', unsafe_allow_html=True)
+    st.latex(r"C_e = C_a \times \frac{T_r}{T_t}")
+    st.caption("Fórmula: Ce (Estorno) | Ca (Comissão Antecipada) | Tr (Tempo Restante) | Tt (Tempo Total)")
     st.markdown('</div>', unsafe_allow_html=True)
 
-with tab4:
+    st.markdown("---")
+    st.subheader("🧪 Simulador de Estorno Prático")
+    
+    col_e1, col_e2 = st.columns([1, 2])
+    with col_e1:
+        c_a = st.number_input("Comissão Total Recebida (R$)", value=240.0)
+        t_t = st.number_input("Vigência Total (Meses)", value=12)
+        t_d = st.slider("Meses Decorridos (até o cancelamento)", 0, int(t_t), 3)
+        t_r = t_t - t_d
+        
+        c_e = c_a * (t_r / t_t)
+        
+    with col_e2:
+        st.markdown(f"""
+        <div class="metric-card">
+            <p class="metric-label">Valor a ser Devolvido (Estorno)</p>
+            <p class="metric-val">R$ {c_e:,.2f}</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+        **Detalhamento do Cenário:**
+        - **Período de Estorno:** {t_r} meses restantes.
+        - **Impacto:** O valor será descontado das suas próximas comissões ("Estorno em Conta Corrente").
+        - **Atenção:** Verifique se o estorno é sobre o valor bruto (considerando impostos já pagos).
+        """)
+
+    with st.expander("💡 Pontos de Atenção em Previdência e Vida"):
+        st.write("""
+        - **Prazo de Gatilho:** Algumas cláusulas tornam a comissão irretratável após 24 meses.
+        - **Impostos:** O estorno é feito sobre o bruto; cuidado com a contabilidade de impostos já recolhidos no mês 1.
+        - **Previdência:** Comum em aportes únicos ou planos com carregamento na saída.
+        """)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with tab5:
     st.markdown("""
     <div class="ebook-section">
         <h2 style="font-family: Montserrat;">Governança & Escala</h2>
-        <p>Entender a tabela é o primeiro passo. Escalar exige foco em 4 fatores que influenciam o valor final:</p>
+        <p>Entender a tabela é o primeiro passo. Escalar exige foco em 4 fatores essenciais:</p>
         <ol>
             <li><b>Volume de Produção:</b> Bonificações por metas atingidas junto às seguradoras.</li>
             <li><b>Mix de Carteira:</b> Equilibrar produtos massificados (Auto) com alto valor agregado (Vida/Empresarial).</li>
@@ -192,4 +200,4 @@ with tab4:
 
 # --- FOOTER ---
 st.markdown("---")
-st.markdown('<p style="text-align: center; color: #475569; font-size: 0.8rem; letter-spacing: 1px;">© 2026 | INTELIGÊNCIA EM SEGUROS • PADRÃO PROFISSIONAL</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; color: #475569; font-size: 0.8rem; letter-spacing: 1px;">© 2026 | INTELIGÊNCIA EM SEGUROS • PADRÃO PROFISSIONAL GLOBUS</p>', unsafe_allow_html=True)
