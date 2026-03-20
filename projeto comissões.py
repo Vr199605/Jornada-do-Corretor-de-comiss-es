@@ -74,8 +74,7 @@ with tabs[0]:
     st.markdown("""
     <div class="ebook-section">
         <h2 style="font-family: 'Montserrat'; color: #FFFFFF;">O Alicerce Estratégico</h2>
-        <p>A <b>tabela de comissão de corretora de seguros</b> define os percentuais que o corretor recebe por cada apólice vendida. 
-        Estes valores variam conforme o ramo, a seguradora e o modelo de atuação.</p>
+        <p>A <b>tabela de comissão de corretora de seguros</b> define os percentuais que o corretor recebe por cada apólice vendida. Estes valores variam conforme o ramo, a seguradora e o modelo de atuação.</p>
         <p>Ela é essencial para <b>organizar os repasses</b>, prever ganhos e manter a gestão financeira da corretora em dia, funcionando como um GPS de rentabilidade.</p>
     </div>
     """, unsafe_allow_html=True)
@@ -106,44 +105,56 @@ with tabs[1]:
 
 # --- CAPÍTULO 3 ---
 with tabs[2]:
-    st.markdown("""
-    <div class="ebook-section">
-        <h2 style="font-family: Montserrat; color: #FFFFFF;">O Cálculo de Manutenção (Fluxo Constante)</h2>
-        <p>Se o cliente é fiel e paga tudo, o cálculo que a seguradora faz internamente para te pagar é baseado no prêmio anualizado:</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
+    st.markdown("<h2 style='font-family: Montserrat; color: #FFFFFF;'>O Fluxo de Recebimento (Pico e Silêncio)</h2>", unsafe_allow_html=True)
     
-    st.markdown('<div class="formula-box">', unsafe_allow_html=True)
-    st.latex(r"V_{total} = (P_{mensal} \times 12) \times \%com")
-    st.caption("P_mensal: Prêmio pago pelo cliente por mês | %com: Seu percentual de comissão")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown("""
-    - **Esgotamento Total:** Você recebe $V_{total}$ integralmente no **mês 1**.
-    - **Esgotamento Parcial:** A seguradora pode dividir esse $V_{total}$ em **3 ou 4 parcelas fixas** no início da vigência.
+    st.write("""
+    Na regra de esgotamento padrão, você não recebe valores iguais todos os meses. O objetivo da seguradora é "esgotar" a comissão do ano o mais rápido possível.
+    
+    - **Mês 1 (O Pico - Valor X):** Você recebe uma antecipação robusta. A seguradora projeta quanto de comissão aquele contrato renderia em 12 meses e te paga uma grande parte (ou tudo) de uma vez.
+    - **Mês 2 ao Mês 12 (O Silêncio - Valor Y):** Como você já "esgotou" o saldo anual logo no início, nos meses seguintes o valor recebido é zero ou apenas um pequeno resíduo até a renovação.
     """)
 
-    st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
-    col_s1, col_s2 = st.columns([1, 2])
-    with col_s1:
-        p_mensal = st.number_input("Prêmio Mensal do Cliente (R$)", value=400.0)
-        perc_com = st.slider("Percentual de Comissão (%)", 0, 40, 20)
-        v_anual_com = (p_mensal * 12) * (perc_com / 100)
-        
-        regra_m = st.selectbox("Regra de Esgotamento", ["Total (Mês 1)", "Parcial (3 Parcelas)", "Parcial (4 Parcelas)"])
-        n_p = 1 if "Total" in regra_m else (3 if "3" in regra_m else 4)
+    st.markdown("### Por que pode variar (X num mês, Y no outro)?")
+    col_var1, col_var2 = st.columns(2)
+    with col_var1:
+        st.markdown("**A. Aceleração de Escalonamento**")
+        st.write("Algumas seguradoras usam um formato de 'escada' curta (ex: 50% no Mês 1, 25% no Mês 2 e 3) para mitigar o risco de estorno imediato.")
+    with col_var2:
+        st.markdown("**B. Agenciamento vs Esgotamento**")
+        st.write("O Mês 1 pode ser uma mistura de Agenciamento (prêmio fixo pela venda) + Esgotamento (antecipação de parcelas futuras).")
 
-    fluxo_m = []
+    st.markdown("---")
+    st.markdown("### Cálculo de Manutenção (Se não houver cancelamento)")
+    st.write("Se o cliente é fiel e paga tudo, o cálculo interno é:")
+    st.latex(r"V_{total} = (P_{mensal} \times 12) \times \%com")
+    
+    st.markdown("""
+    - **Esgotamento Total:** Você recebe $V_{total}$ integralmente no **Mês 1**.
+    - **Esgotamento Parcial:** Dividido em **3 ou 4 parcelas fixas** (Agenciamento + Esgotamento escalonado).
+    """)
+
+    # Simulador de Fluxo
+    st.markdown('<div class="formula-box">', unsafe_allow_html=True)
+    c_s1, c_s2 = st.columns([1, 2])
+    with c_s1:
+        p_m = st.number_input("Prêmio Mensal (R$)", value=400.0)
+        p_c = st.slider("Comissão (%)", 0, 40, 20)
+        v_total_calc = (p_m * 12) * (p_c / 100)
+        reg_sel = st.selectbox("Modelo de Recebimento", ["Esgotamento Total (Mês 1)", "Escalonado (3 Meses)", "Escalonado (4 Meses)"])
+        n_meses = 1 if "Total" in reg_sel else (3 if "3" in reg_sel else 4)
+
+    fluxo_data = []
     for m in range(1, 13):
-        val = v_anual_com / n_p if m <= n_p else 0
-        fluxo_m.append({"Mês": f"Mês {m:02d}", "Recebimento": val})
-
-    with col_s2:
-        st.markdown(f'<div class="metric-card"><p class="metric-label">V_total Anual Estimado</p><p class="metric-val">R$ {v_anual_com:,.2f}</p></div>', unsafe_allow_html=True)
+        valor_m = v_total_calc / n_meses if m <= n_meses else 0
+        fluxo_data.append({"Mês": f"Mês {m:02d}", "Valor": valor_m, "Tipo": "Pico (X)" if valor_m > 0 else "Silêncio (Y)"})
+    
+    with c_s2:
+        st.markdown(f'<div class="metric-card"><p class="metric-label">V_total Anualizado</p><p class="metric-val">R$ {v_total_calc:,.2f}</p></div>', unsafe_allow_html=True)
         st.write("")
-        st.data_editor(pd.DataFrame(fluxo_m), hide_index=True, use_container_width=True, disabled=True,
-                       column_config={"Recebimento": st.column_config.NumberColumn(format="R$ %.2f")})
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.data_editor(pd.DataFrame(fluxo_data), hide_index=True, use_container_width=True, disabled=True,
+                       column_config={"Valor": st.column_config.NumberColumn(format="R$ %.2f")})
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 # --- CAPÍTULO 4 ---
 with tabs[3]:
@@ -151,12 +162,16 @@ with tabs[3]:
     st.markdown("<h2 style='font-family: Montserrat; color: #FFFFFF;'>Engenharia de Esgotamento & Estorno</h2>", unsafe_allow_html=True)
     
     st.markdown("### 1. O Conceito de Esgotamento")
-    st.write("Diferente da comissão mensal, no modelo de esgotamento a seguradora paga uma porcentagem sobre o prêmio anual de uma só vez. A regra entra em vigor no cancelamento antecipado: o corretor devolve a parte proporcional.")
+    st.write("No modelo de esgotamento, a seguradora antecipa o total anual. A regra de estorno entra em vigor quando o contrato é cancelado antes do período previsto: o corretor devolve a parte proporcional à seguradora.")
     
     st.markdown("### 2. Normas da SUSEP")
-    st.write("A **Circular SUSEP nº 612/2020** garante transparência ao cliente e o **Direito ao Estorno** às seguradoras em caso de inadimplência.")
+    st.write("""
+    - **Circular SUSEP nº 612/2020:** O corretor deve informar o montante da comissão se solicitado.
+    - **Direito ao Estorno:** As seguradoras têm respaldo legal para recuperar valores antecipados em cancelamentos ou inadimplência.
+    """)
 
-    st.markdown("### 3. Cálculo de Estorno (Pro-rata Temporis)")
+    st.markdown("### 3. Cálculo do Estorno (Pro-rata Temporis)")
+    st.write("Se você recebeu por 12 meses e o cliente cancelou no 4º mês, você deve estornar os 8 meses restantes.")
     st.markdown('<div class="formula-box">', unsafe_allow_html=True)
     st.latex(r"C_e = C_a \times \frac{T_r}{T_t}")
     st.caption("Ce: Estorno | Ca: Comissão Recebida | Tr: Tempo Restante | Tt: Tempo Total")
@@ -164,16 +179,21 @@ with tabs[3]:
 
     ce1, ce2 = st.columns([1, 2])
     with ce1:
-        c_a_in = st.number_input("Comissão Recebida Antecipada (R$)", value=240.0, key="ca_4")
-        t_t_in = st.number_input("Vigência (Meses)", value=12, key="tt_4")
+        c_a_in = st.number_input("Comissão Total Antecipada (R$)", value=240.0)
+        t_t_in = st.number_input("Vigência (Meses)", value=12)
         t_d_in = st.slider("Meses Decorridos", 0, 12, 3)
-        c_e_res = c_a_in * ((t_t_in - t_d_in) / t_t_in) if t_t_in > 0 else 0
+        t_r_in = t_t_in - t_d_in
+        c_e_res = c_a_in * (t_r_in / t_t_in) if t_t_in > 0 else 0
     with ce2:
-        st.markdown(f'<div class="metric-card" style="border-color: #F87171;"><p class="metric-label">Estorno a Devolver</p><p class="metric-val" style="color: #F87171;">R$ {c_e_res:,.2f}</p></div>', unsafe_allow_html=True)
-        st.info(f"O corretor devolve R$ {c_e_res:,.2f} referente aos {t_t_in - t_d_in} meses não decorridos.")
+        st.markdown(f'<div class="metric-card" style="border-color: #F87171;"><p class="metric-label">Valor a Estornar (Devolver)</p><p class="metric-val" style="color: #F87171;">R$ {c_e_res:,.2f}</p></div>', unsafe_allow_html=True)
+        st.info(f"Cálculo: {c_a_in} × ({t_r_in}/{t_t_in}) = R$ {c_e_res:,.2f} (descontado das próximas comissões).")
 
     st.markdown("### 4. Pontos de Atenção")
-    st.warning("- **Gatilho:** Algumas seguradoras cessam o estorno após 24 meses. \n- **Impostos:** O estorno é sobre o bruto. \n- **Previdência:** Comum em aportes únicos.")
+    st.warning("""
+    - **Prazo de Gatilho:** Algumas seguradoras cessam estornos após 24 meses.
+    - **Impostos:** O estorno é sobre o bruto; cuidado com impostos já pagos no Mês 1.
+    - **Previdência:** Esgotamento é comum em aportes únicos ou planos com carregamento na saída.
+    """)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- CAPÍTULO 5 ---
@@ -182,7 +202,7 @@ with tabs[4]:
     <div class="ebook-section">
         <h2 style="font-family: Montserrat; color: #FFFFFF;">Governança & Escala</h2>
         <p>A comissão é o resultado de uma engenharia bem executada. Foque em volume, mix de carteira e tecnologia.</p>
-        <p><i>"No mercado de alta performance, o esgotamento é uma ferramenta de liquidez, não apenas um ganho antecipado."</i></p>
+        <p><i>"No mercado de alta performance, o esgotamento é uma ferramenta de liquidez estratégica."</i></p>
     </div>
     """, unsafe_allow_html=True)
     if st.button("CONCLUIR JORNADA"):
