@@ -68,8 +68,9 @@ st.markdown('<h1 class="main-title">A Bíblia da Comissão</h1>', unsafe_allow_h
 st.markdown('<p class="sub-title">Inteligência Financeira & Engenharia de Recebimento</p>', unsafe_allow_html=True)
 
 # --- CAPÍTULOS ---
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["01. CONCEITO", "02. MERCADO", "03. REGRAS", "04. ESGOTAMENTO & ESTORNO", "05. GOVERNANÇA"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["01. CONCEITO", "02. MERCADO", "03. REGRAS DE FLUXO", "04. ESGOTAMENTO & ESTORNO", "05. GOVERNANÇA"])
 
+# --- CAPÍTULO 1 ---
 with tab1:
     st.markdown("""
     <div class="ebook-section">
@@ -86,6 +87,7 @@ with tab1:
     with col_b:
         st.success("**Pelas Seguradoras:** Para definir os percentuais autorizados em cada produto e controlar canais.")
 
+# --- CAPÍTULO 2 ---
 with tab2:
     st.markdown('<div class="ebook-section"><h2 style="font-family: Montserrat; color: #FFFFFF;">Benchmark de Mercado 2026</h2>', unsafe_allow_html=True)
     st.write("Percentuais médios praticados de acordo com o tipo de seguro:")
@@ -107,6 +109,7 @@ with tab2:
             st.caption(f"Faixa: {item['Mín']}% a {item['Máx']}% — {item['Nota']}")
     st.markdown('</div>', unsafe_allow_html=True)
 
+# --- CAPÍTULO 3 ---
 with tab3:
     st.markdown("""
     <div class="ebook-section">
@@ -123,28 +126,71 @@ with tab3:
     with r3:
         st.markdown('<div class="regra-card" style="border-top-color: #93C5FD;"><h4>ESGOTAMENTO</h4>Antecipação total da receita concentrada nos meses iniciais da vigência.</div>', unsafe_allow_html=True)
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
+    st.subheader("Simulador de Fluxo de Caixa Mensal")
+    
+    cs1, cs2 = st.columns([1, 2])
+    with cs1:
+        v_total_sim = st.number_input("Comissão Total Estimada (R$)", value=4800.0, step=100.0, key="v_sim")
+        regra_sim = st.selectbox("Escolha a Regra", ["Total", "Parcelado", "Esgotamento"], key="r_sim")
+        
+        if regra_sim == "Esgotamento":
+            n_esg_sim = st.number_input("Esgotar em quantos meses?", min_value=1, value=4, key="n_sim")
+            vig_sim = st.number_input("Vigência (Meses)", min_value=n_esg_sim, value=12, key="v_sim_vig")
+        else:
+            vig_sim = st.number_input("Vigência (Meses)", min_value=1, value=12, key="v_sim_vig_std")
+            n_esg_sim = 1
+
+    fluxo_sim = []
+    for m in range(1, vig_sim + 1):
+        if regra_sim == "Total":
+            val_m = v_total_sim if m == 1 else 0
+        elif regra_sim == "Parcelado":
+            val_m = v_total_sim / vig_sim
+        else:
+            val_m = v_total_sim / n_esg_sim if m <= n_esg_sim else 0
+        fluxo_sim.append({"Mês": f"Mês {m:02d}", "Valor (R$)": val_m})
+
+    with cs2:
+        st.data_editor(
+            pd.DataFrame(fluxo_sim),
+            column_config={
+                "Valor (R$)": st.column_config.NumberColumn(format="R$ %.2f"),
+                "Mês": st.column_config.TextColumn()
+            },
+            hide_index=True, use_container_width=True, disabled=True
+        )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# --- CAPÍTULO 4 ---
 with tab4:
     st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
     st.markdown("<h2 style='font-family: Montserrat; color: #FFFFFF;'>Engenharia de Esgotamento & Estorno</h2>", unsafe_allow_html=True)
+    
     st.write("""
-    No mercado de seguros e previdência, a comissão por esgotamento (ou antecipada com estorno) é uma prática onde a seguradora 
-    antecipa ao corretor uma parte ou o total da comissão anual logo no início da vigência.
+    No mercado de seguros e previdência, a comissão por esgotamento (também conhecida como comissão antecipada com estorno ou pro-rata) 
+    é uma prática comum, onde a seguradora antecipa ao corretor uma parte ou o total da comissão anual logo no início da vigência.
     """)
     
-    st.markdown("### 1. O Conceito de Esgotamento")
-    st.write("""
-    Diferente da comissão mensal (onde o corretor recebe conforme o cliente paga), no modelo de esgotamento a seguradora paga uma porcentagem sobre o prêmio anual de uma só vez. 
-    A **regra de esgotamento** entra em vigor quando o contrato é cancelado antes do período previsto.
-    """)
-
-    st.markdown("### 2. Normas da SUSEP")
-    st.write("""
-    A **Circular SUSEP nº 612/2020** estabelece a transparência: o corretor deve informar o montante da comissão se solicitado. 
-    As seguradoras possuem respaldo legal para o **Direito ao Estorno** caso o prêmio não seja integralmente pago.
-    """)
+    col_text1, col_text2 = st.columns(2)
+    with col_text1:
+        st.markdown("### 1. O Conceito de Esgotamento")
+        st.write("""
+        Diferente da comissão mensal, no modelo de esgotamento a seguradora paga uma porcentagem sobre o prêmio anual de uma só vez. 
+        A "regra de esgotamento" entra em vigor quando o contrato é cancelado antes do período previsto. Como a corretora recebeu por um serviço 
+        que "não se completou", ela deve devolver a parte proporcional.
+        """)
+    
+    with col_text2:
+        st.markdown("### 2. Normas da SUSEP")
+        st.write("""
+        A **Circular SUSEP nº 612/2020** estabelece que o corretor deve informar ao cliente o montante da comissão, se solicitado. 
+        As seguradoras têm o respaldo legal para recuperar valores antecipados caso o prêmio não seja integralmente pago pelo segurado.
+        """)
 
     st.markdown("### 3. Como é feito o cálculo? (Pro-rata Temporis)")
-    st.write("Se o contrato é cancelado antes do período previsto, a corretora deve devolver a parte proporcional à seguradora.")
+    st.write("O cálculo é baseado no conceito de proporcionalidade ao tempo. Se o corretor recebeu por 12 meses e o cliente cancelou no 4º mês, o corretor 'não fez jus' aos 8 meses restantes.")
     
     st.markdown('<div class="formula-box">', unsafe_allow_html=True)
     st.latex(r"C_e = C_a \times \frac{T_r}{T_t}")
@@ -156,51 +202,54 @@ with tab4:
     
     col_e1, col_e2 = st.columns([1, 2])
     with col_e1:
-        c_a = st.number_input("Comissão Total Recebida (R$)", value=240.0)
-        t_t = st.number_input("Vigência Total (Meses)", value=12)
-        t_d = st.slider("Meses Decorridos (até o cancelamento)", 0, int(t_t), 3)
-        t_r = t_t - t_d
+        c_a_val = st.number_input("Comissão Total Recebida (R$)", value=240.0, key="ca_estorno")
+        t_t_val = st.number_input("Vigência Total (Meses)", value=12, key="tt_estorno")
+        t_d_val = st.slider("Meses Decorridos (até o cancelamento)", 0, int(t_t_val), 3, key="td_estorno")
+        t_r_val = t_t_val - t_d_val
         
-        c_e = c_a * (t_r / t_t) if t_t > 0 else 0
+        c_e_val = c_a_val * (t_r_val / t_t_val) if t_t_val > 0 else 0
         
     with col_e2:
         st.markdown(f"""
         <div class="metric-card">
             <p class="metric-label">Valor a ser Devolvido (Estorno)</p>
-            <p class="metric-val">R$ {c_e:,.2f}</p>
+            <p class="metric-val">R$ {c_e_val:,.2f}</p>
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown(f"""
-        **Detalhamento do Cenário:**
-        - **Período de Estorno:** {t_r} meses restantes.
-        - **Impacto:** O valor será descontado das suas próximas comissões ("Estorno em Conta Corrente").
+        **Exemplo Prático Detalhado:**
+        - **Cenário:** Prêmio anual de R$ 1.200, comissão de 20% (R$ 240) paga no Mês 1.
+        - **Cancelamento:** Após {t_d_val} meses de uso.
+        - **Período de Estorno:** {t_r_val} meses restantes.
+        - **Resultado:** O corretor deverá devolver R$ {c_e_val:,.2f} à seguradora (estorno em conta corrente).
         """)
 
-    with st.expander("💡 Pontos de Atenção em Previdência e Vida"):
-        st.write("""
-        - **Prazo de Gatilho:** Algumas cláusulas tornam a comissão irretratável após um certo período (ex: 24 meses).
-        - **Impostos:** O estorno é feito sobre o bruto; cuidado com a contabilidade de impostos já recolhidos no mês 1.
-        - **Previdência:** Comum em aportes únicos ou planos com carregamento na saída.
-        """)
+    st.markdown("### 4. Pontos de Atenção")
+    st.warning("""
+    * **Prazo de Gatilho:** Algumas seguradoras usam cláusulas de "comissão irretratável" após um certo período.
+    * **Impostos:** O estorno geralmente é feito sobre o valor bruto. O corretor já pode ter pago impostos sobre a comissão cheia.
+    * **Previdência Privada:** Esgotamento é muito comum em aportes únicos ou planos com carregamento na saída.
+    """)
     st.markdown('</div>', unsafe_allow_html=True)
 
+# --- CAPÍTULO 5 ---
 with tab5:
     st.markdown("""
     <div class="ebook-section">
         <h2 style="font-family: Montserrat; color: #FFFFFF;">Governança & Escala</h2>
         <p>Entender a tabela é o primeiro passo. Escalar exige foco em 4 fatores essenciais:</p>
         <ol>
-            <li><b>Volume de Produção:</b> Bonificações por metas atingidas junto às seguradoras.</li>
-            <li><b>Mix de Carteira:</b> Equilibrar produtos massificados (Auto) com alto valor agregado (Vida/Empresarial).</li>
-            <li><b>Negociação:</b> Corretores experientes negociam 'over-comission'.</li>
-            <li><b>Tecnologia:</b> A conferência automática evita perdas operacionais.</li>
+            <li><b>Volume de Produção:</b> Bonificações por metas atingidas.</li>
+            <li><b>Mix de Carteira:</b> Equilibrar produtos massificados com alto valor agregado.</li>
+            <li><b>Negociação:</b> Experiência de mercado abre portas para percentuais diferenciados.</li>
+            <li><b>Tecnologia:</b> A conferência automática evita perdas que chegam a 15% do faturamento anual.</li>
         </ol>
         <p><i>"No mercado de alta performance, a comissão é o resultado de uma engenharia bem executada."</i></p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("FINALIZAR JORNADA E GERAR INSIGHTS"):
+    if st.button("FINALIZAR JORNADA"):
         st.balloons()
         st.toast("E-book Master Concluído!", icon="💎")
 
