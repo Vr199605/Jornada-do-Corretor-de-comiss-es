@@ -28,13 +28,6 @@ st.markdown("""
         backdrop-filter: blur(12px); margin-bottom: 30px;
     }
 
-    .regra-card {
-        padding: 25px; border-radius: 16px;
-        background: rgba(255, 255, 255, 0.03);
-        border-top: 4px solid #3B82F6; height: 100%;
-    }
-    .regra-card h4 { color: #3B82F6; margin-top: 0; font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
-    
     .metric-card {
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
         padding: 25px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.3);
@@ -74,33 +67,18 @@ with tabs[0]:
     st.markdown("""
     <div class="ebook-section">
         <h2 style="font-family: 'Montserrat'; color: #FFFFFF;">O Alicerce Estratégico</h2>
-        <p>A <b>tabela de comissão de corretora de seguros</b> define os percentuais que o corretor recebe por cada apólice vendida. Estes valores variam conforme o ramo, a seguradora e o modelo de atuação.</p>
-        <p>Ela é essencial para <b>organizar os repasses</b>, prever ganhos e manter a gestão financeira da corretora em dia.</p>
+        <p>A <b>tabela de comissão</b> define os percentuais que o corretor recebe por cada apólice vendida. Organiza os repasses e prevê ganhos.</p>
     </div>
     """, unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.info("**Pelas Corretoras:** Para padronizar repasses internos e acompanhar o desempenho comercial.")
-    with col2:
-        st.success("**Pelas Seguradoras:** Para definir os percentuais autorizados e controlar os repasses às corretoras.")
+    st.info("**Pelas Corretoras:** Padronização interna. \n\n **Pelas Seguradoras:** Definição de custos de aquisição.")
 
 # --- CAPÍTULO 2 ---
 with tabs[1]:
     st.markdown('<div class="ebook-section"><h2 style="font-family: Montserrat; color: #FFFFFF;">Benchmark de Mercado 2026</h2>', unsafe_allow_html=True)
-    dados_m = [
-        {"Ramo": "Seguro de Vida", "Máx": 30, "Obs": "Margem estratégica."},
-        {"Ramo": "Seguro Saúde", "Máx": 25, "Obs": "Recorrência mensal."},
-        {"Ramo": "Seguro Empresarial", "Máx": 25, "Obs": "Ticket elevado."},
-        {"Ramo": "Seguro Automóvel", "Máx": 20, "Obs": "Alto giro."},
-        {"Ramo": "Seguro Residencial", "Máx": 15, "Obs": "Fidelização."}
-    ]
+    dados_m = [{"Ramo": "Vida", "M": 30}, {"Ramo": "Saúde", "M": 25}, {"Ramo": "Auto", "M": 20}]
     for i in dados_m:
-        c1, c2 = st.columns([1, 4])
-        with c1: st.markdown(f"**{i['Ramo']}**")
-        with c2: 
-            st.progress(i['Máx']/30)
-            st.caption(f"Teto: {i['Máx']}% — {i['Obs']}")
+        st.markdown(f"**{i['Ramo']}**")
+        st.progress(i['M']/30)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- CAPÍTULO 3 ---
@@ -110,56 +88,50 @@ with tabs[2]:
     
     st.markdown("""
     ### 1. O Gatilho da "Comissão Prevista"
-    No **Quiver**, ao cadastrar uma apólice, você informa o Percentual de Comissão e a Forma de Pagamento. O sistema calcula automaticamente a **Comissão Prevista**.
-    Se você marcar como antecipada/esgotamento, o sistema espera receber o "bolo" total no primeiro extrato baixado da seguradora.
+    No **Quiver**, ao cadastrar a apólice com comissão antecipada/esgotamento, o sistema calcula o valor anual total e aguarda a baixa do primeiro extrato.
     
-    ### 2. A Regra do "Prêmio Líquido da Parcela"
-    Uma lógica técnica fundamental: **A comissão paga no esgotamento não pode ser maior que o prêmio líquido pago pelo cliente na parcela.**
-    
-    - **O que acontece:** Se a comissão total for R$ 500,00, mas a 1ª parcela for de R$ 300,00, a seguradora não tem "lastro" para pagar os R$ 500,00 de uma vez.
-    - **No Sistema:** Você verá o recebimento de R$ 300,00 no Mês 1 (**Valor X**) e os R$ 200,00 restantes no Mês 2 (**Valor Y**) assim que a segunda parcela entrar.
+    ### 2. A Regra do "Prêmio Líquido da Parcela" (Lastro)
+    A comissão paga não pode ser maior que o prêmio líquido pago pelo cliente na parcela.
+    - **Cenário X e Y:** Se a comissão total for R$ 500 mas a parcela for R$ 300, a seguradora paga R$ 300 no Mês 1 (**Valor X**) e os R$ 200 restantes no Mês 2 (**Valor Y**) conforme as parcelas entram.
     """)
 
     st.markdown("---")
-    st.markdown("### 3. Dinâmica de Pico e Silêncio (Se não houver cancelamento)")
-    st.write("O cálculo interno para pagamento total é:")
-    st.latex(r"V_{total} = (P_{mensal} \times 12) \times \%com")
+    st.markdown("### Simulação de Esgotamento com Trava de Lastro")
     
-    st.markdown("""
-    - **Esgotamento Total:** Recebimento integral no **Mês 1** (desde que respeite o lastro da parcela).
-    - **Esgotamento Parcial/Escalonado:** Dividido para mitigar risco de estorno imediato ou por falta de lastro no prêmio da parcela.
-    """)
-
-    # Simulador de Fluxo Quiver
-    st.markdown('<div class="formula-box">', unsafe_allow_html=True)
     c_s1, c_s2 = st.columns([1, 2])
     with c_s1:
-        p_mensal_cli = st.number_input("Valor da Parcela do Cliente (R$)", value=300.0)
-        p_comissao = st.slider("Comissão (%)", 0, 40, 20)
-        v_total_previsto = (p_mensal_cli * 12) * (p_comissao / 100)
+        p_mensal = st.number_input("Valor da Parcela do Cliente (R$)", value=400.0)
+        p_com = st.slider("Percentual de Comissão (%)", 0, 50, 20)
+        v_previsto = (p_mensal * 12) * (p_com / 100)
         
-        st.write(f"**Comissão Prevista Total:** R$ {v_total_previsto:,.2f}")
-        
-        lastro = st.checkbox("Limitar pelo Prêmio Líquido da Parcela (Lógica Quiver)", value=True)
+        st.write(f"**Comissão Prevista Total: R$ {v_previsto:,.2f}**")
+        lastro_on = st.checkbox("Respeitar Limite da Parcela (Lógica Quiver)", value=True)
     
-    fluxo_quiver = []
-    saldo_a_receber = v_total_previsto
+    fluxo_q = []
+    restante = v_previsto
     for m in range(1, 13):
-        if lastro:
-            # Paga o máximo possível limitado à parcela do cliente
-            pagamento_m = min(saldo_a_receber, p_mensal_cli)
+        if lastro_on:
+            # Paga o máximo possível limitado ao valor da parcela do cliente
+            pago_no_mes = min(restante, p_mensal)
         else:
-            # Esgotamento total sem trava
-            pagamento_m = saldo_a_receber if m == 1 else 0
+            # Esgotamento Total puro (tudo no mês 1)
+            pago_no_mes = restante if m == 1 else 0
             
-        saldo_a_receber -= pagamento_m
-        fluxo_quiver.append({"Mês": f"Mês {m:02d}", "Recebimento": pagamento_m, "Fase": "Pico (X)" if m==1 else ("Residual (Y)" if pagamento_m > 0 else "Silêncio")})
+        restante -= pago_no_mes
+        fluxo_q.append({
+            "Mês": f"Mês {m:02d}", 
+            "Recebimento": pago_no_mes, 
+            "Fase": "Pico (X)" if m == 1 and pago_no_mes > 0 else ("Valor Y" if pago_no_mes > 0 else "Silêncio")
+        })
     
     with c_s2:
-        st.markdown(f'<div class="metric-card"><p class="metric-label">Total Liquidado no Ciclo</p><p class="metric-val">R$ {sum(d["Recebimento"] for d in fluxo_quiver):,.2f}</p></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><p class="metric-label">Total Liquidado no Ciclo</p><p class="metric-val">R$ {v_previsto:,.2f}</p></div>', unsafe_allow_html=True)
         st.write("")
-        st.data_editor(pd.DataFrame(fluxo_quiver), hide_index=True, use_container_width=True, disabled=True,
+        st.data_editor(pd.DataFrame(fluxo_q), hide_index=True, use_container_width=True, disabled=True,
                        column_config={"Recebimento": st.column_config.NumberColumn(format="R$ %.2f")})
+        
+        if v_previsto > p_mensal and lastro_on:
+            st.warning(f"⚠️ **Falta de Lastro:** A comissão (R$ {v_previsto:,.2f}) é maior que a parcela (R$ {p_mensal:,.2f}). Por isso você vê o valor distribuído em mais de um mês.")
     st.markdown('</div></div>', unsafe_allow_html=True)
 
 # --- CAPÍTULO 4 ---
@@ -167,45 +139,27 @@ with tabs[3]:
     st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
     st.markdown("<h2 style='font-family: Montserrat; color: #FFFFFF;'>Engenharia de Esgotamento & Estorno</h2>", unsafe_allow_html=True)
     
-    st.markdown("### 1. O Conceito de Esgotamento")
-    st.write("Diferente da comissão mensal, no modelo de esgotamento a seguradora antecipa o prêmio anual de uma só vez. A regra de estorno entra em vigor quando o contrato é cancelado antes do período previsto.")
-    
-    st.markdown("### 2. Normas da SUSEP")
-    st.write("""
-    - **Circular SUSEP nº 612/2020:** O corretor deve informar o montante da comissão se solicitado.
-    - **Direito ao Estorno:** Respaldo legal para recuperar valores antecipados em inadimplência ou cancelamento.
-    """)
+    st.markdown("### 1. Normas da SUSEP")
+    st.write("A **Circular SUSEP nº 612/2020** garante o Direito ao Estorno proporcional ao tempo restante (Pro-rata) em caso de cancelamento.")
 
-    st.markdown("### 3. Cálculo do Estorno (Pro-rata Temporis)")
     st.markdown('<div class="formula-box">', unsafe_allow_html=True)
     st.latex(r"C_e = C_a \times \frac{T_r}{T_t}")
-    st.caption("Ce: Estorno | Ca: Comissão Antecipada | Tr: Tempo Restante | Tt: Tempo Total")
+    st.caption("Ce: Estorno | Ca: Comissão Recebida | Tr: Tempo Restante | Tt: Tempo Total")
     st.markdown('</div>', unsafe_allow_html=True)
 
     ce1, ce2 = st.columns([1, 2])
     with ce1:
-        c_a_val = st.number_input("Comissão Total Recebida (R$)", value=240.0, key="ca_4")
-        t_t_val = st.number_input("Vigência (Meses)", value=12, key="tt_4")
-        t_d_val = st.slider("Meses Decorridos", 0, 12, 3)
-        c_e_res = c_a_val * ((t_t_val - t_d_val) / t_t_val) if t_t_val > 0 else 0
+        c_a_in = st.number_input("Comissão Total Recebida (R$)", value=240.0, key="ca_4")
+        t_d_in = st.slider("Mês do Cancelamento", 0, 12, 3)
+        c_e_res = c_a_in * ((12 - t_d_in) / 12)
     with ce2:
-        st.markdown(f'<div class="metric-card" style="border-color: #F87171;"><p class="metric-label">Valor do Estorno (A Devolver)</p><p class="metric-val" style="color: #F87171;">R$ {c_e_res:,.2f}</p></div>', unsafe_allow_html=True)
-
-    st.warning("**Atenção:** O estorno é sobre o bruto. Cuidado com impostos já pagos sobre o Pico (X) do Mês 1.")
+        st.markdown(f'<div class="metric-card" style="border-color: #F87171;"><p class="metric-label">Valor a Estornar</p><p class="metric-val" style="color: #F87171;">R$ {c_e_res:,.2f}</p></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- CAPÍTULO 5 ---
 with tabs[4]:
-    st.markdown("""
-    <div class="ebook-section">
-        <h2 style="font-family: Montserrat; color: #FFFFFF;">Governança & Escala</h2>
-        <p>A comissão é o resultado de uma engenharia bem executada. Foque em volume, mix de carteira e tecnologia.</p>
-        <p><i>"No mercado de alta performance, o esgotamento é uma ferramenta de liquidez estratégica."</i></p>
-    </div>
-    """, unsafe_allow_html=True)
-    if st.button("CONCLUIR JORNADA"):
-        st.balloons()
-        st.toast("E-book Master Finalizado!", icon="💎")
+    st.markdown('<div class="ebook-section"><h2>Governança</h2><p>Esgotamento é ferramenta de liquidez.</p></div>', unsafe_allow_html=True)
+    if st.button("CONCLUIR"): st.balloons()
 
 # --- FOOTER ---
 st.markdown("---")
