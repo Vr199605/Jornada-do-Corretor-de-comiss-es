@@ -12,6 +12,7 @@ st.markdown("""
     html, body, [class*="css"] { font-family: 'Inter', sans-serif; background-color: #0F172A; }
     .stApp { background: radial-gradient(circle at top right, #1E293B, #0F172A); color: #F8FAFC; }
     
+    /* Títulos */
     .main-title { 
         font-family: 'Montserrat', sans-serif; 
         font-weight: 700; font-size: 3.2rem; 
@@ -19,8 +20,9 @@ st.markdown("""
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         margin-bottom: 5px;
     }
-    .sub-title { color: #64748B; font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; font-weight: 600; }
+    .sub-title { color: #64748B; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; font-weight: 600; }
 
+    /* Cards Estilo Glassmorphism */
     .ebook-section {
         background: rgba(30, 41, 59, 0.4);
         padding: 40px; border-radius: 24px;
@@ -28,6 +30,7 @@ st.markdown("""
         backdrop-filter: blur(12px); margin-bottom: 30px;
     }
 
+    /* Regras de Comissão */
     .regra-card {
         padding: 25px; border-radius: 16px;
         background: rgba(255, 255, 255, 0.03);
@@ -35,17 +38,22 @@ st.markdown("""
     }
     .regra-card h4 { color: #3B82F6; margin-top: 0; font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
     
-    /* Tabela Customizada Estilo Globus */
-    .stDataFrame { background: transparent !important; border-radius: 15px; }
-    
-    /* Métricas Minimalistas */
-    .metric-box {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 20px; border-radius: 12px; text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Métricas Customizadas */
+    .metric-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+        padding: 25px; border-radius: 20px; border: 1px solid rgba(59, 130, 246, 0.3);
+        text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     }
-    .metric-val { font-size: 1.8rem; font-weight: 700; color: #FFFFFF; }
-    .metric-label { font-size: 0.8rem; color: #94A3B8; text-transform: uppercase; }
+    .metric-val { font-size: 2.2rem; font-weight: 700; color: #FFFFFF; margin: 0; }
+    .metric-label { font-size: 0.7rem; color: #94A3B8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+
+    /* Tabs Customizadas */
+    .stTabs [data-baseweb="tab-list"] { gap: 30px; }
+    .stTabs [data-baseweb="tab"] {
+        height: 60px; background: transparent !important; color: #94A3B8 !important;
+        font-family: 'Montserrat', sans-serif; font-size: 0.85rem; border: none !important;
+    }
+    .stTabs [aria-selected="true"] { color: #FFFFFF !important; border-bottom: 2px solid #3B82F6 !important; }
 
     p, li { color: #CBD5E1; line-height: 1.6; }
     b, strong { color: #FFFFFF; }
@@ -56,7 +64,7 @@ st.markdown("""
 st.markdown('<h1 class="main-title">A Bíblia da Comissão</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-title">Inteligência Financeira & Engenharia de Recebimento</p>', unsafe_allow_html=True)
 
-# --- CONTEÚDO EM CAPÍTULOS ---
+# --- CAPÍTULOS ---
 tab1, tab2, tab3, tab4 = st.tabs(["01. CONCEITO", "02. MERCADO", "03. FLUXO DE CAIXA", "04. GOVERNANÇA"])
 
 with tab1:
@@ -69,118 +77,119 @@ with tab1:
     </div>
     """, unsafe_allow_html=True)
     
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("""
-        ### Pelas Corretoras
-        Utilizada para padronizar repasses internos, acompanhar o desempenho comercial e manter a saúde do fluxo de caixa sob controle rigoroso.
-        """)
-    with c2:
-        st.markdown("""
-        ### Pelas Seguradoras
-        Serve para definir percentuais autorizados em cada produto e controlar os repasses às corretoras parceiras conforme o volume de produção.
-        """)
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.info("**Pelas Corretoras:** Para padronizar repasses internos e acompanhar o desempenho comercial.")
+    with col_b:
+        st.success("**Pelas Seguradoras:** Para definir os percentuais autorizados em cada produto e controlar canais.")
 
 with tab2:
     st.markdown('<div class="ebook-section"><h2 style="font-family: Montserrat;">Benchmark de Mercado 2026</h2>', unsafe_allow_html=True)
-    st.write("Percentuais médios praticados por tipo de seguro:")
+    st.write("Percentuais médios praticados de acordo com o tipo de seguro:")
 
-    # Dados originais do texto
-    dados = [
-        {"Ramo": "Seguro de Vida", "Perc": 30, "Cor": "#3B82F6", "Desc": "Maior margem e foco em previdência."},
-        {"Ramo": "Seguro Saúde", "Perc": 25, "Cor": "#60A5FA", "Desc": "Recorrência mensal constante."},
-        {"Ramo": "Seguro Empresarial", "Perc": 25, "Cor": "#93C5FD", "Desc": "Contratos robustos e negociáveis."},
-        {"Ramo": "Seguro Automóvel", "Perc": 20, "Cor": "#2563EB", "Desc": "Alta renovação e giro."},
-        {"Ramo": "Seguro Residencial", "Perc": 15, "Cor": "#1D4ED8", "Desc": "Porta de entrada para cross-selling."}
+    dados_mercado = [
+        {"Ramo": "Seguro de Vida", "Mín": 20, "Máx": 30, "Nota": "Maior margem estratégica."},
+        {"Ramo": "Seguro Saúde", "Mín": 15, "Máx": 25, "Nota": "Recorrência mensal estável."},
+        {"Ramo": "Seguro Empresarial", "Mín": 15, "Máx": 25, "Nota": "Contratos de alto ticket."},
+        {"Ramo": "Seguro Automóvel", "Mín": 10, "Máx": 20, "Nota": "Alta renovação e giro."},
+        {"Ramo": "Seguro Residencial", "Mín": 10, "Máx": 15, "Nota": "Fidelização de carteira."}
     ]
 
-    for item in dados:
-        col_r1, col_r2 = st.columns([1, 3])
-        with col_r1:
-            st.markdown(f"**{item['Ramo']}** \n<small>{item['Perc']}% (Máx)</small>", unsafe_allow_html=True)
-        with col_r2:
-            st.progress(item['Perc'] / 30) # Normalizado pelo máximo de 30%
-            st.caption(item['Desc'])
+    for item in dados_mercado:
+        c_r1, c_r2 = st.columns([1, 4])
+        with c_r1:
+            st.markdown(f"**{item['Ramo']}**")
+        with c_r2:
+            st.progress(item['Máx'] / 30)
+            st.caption(f"Faixa: {item['Mín']}% a {item['Máx']}% — {item['Nota']}")
     st.markdown('</div>', unsafe_allow_html=True)
 
 with tab3:
     st.markdown("""
     <div class="ebook-section">
         <h2 style="font-family: Montserrat;">As 3 Regras de Recebimento</h2>
-        <p>A engenharia financeira da corretora depende de como a receita é distribuída no tempo:</p>
+        <p>A engenharia financeira da corretora é ditada por como a comissão entra no caixa:</p>
     </div>
     """, unsafe_allow_html=True)
 
     r1, r2, r3 = st.columns(3)
     with r1:
-        st.markdown('<div class="regra-card"><h4>TOTAL (Upfront)</h4>Recebimento integral no primeiro mês. Ideal para crescimento acelerado.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="regra-card"><h4>TOTAL (Upfront)</h4>Comissão integral na primeira parcela. Foco em liquidez imediata.</div>', unsafe_allow_html=True)
     with r2:
-        st.markdown('<div class="regra-card" style="border-top-color: #60A5FA;"><h4>PARCELADO (Pro-rata)</h4>Comissão diluída conforme o pagamento do cliente. Segurança contra estornos.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="regra-card" style="border-top-color: #60A5FA;"><h4>PARCELADO (Pro-rata)</h4>Comissão diluída conforme o pagamento do cliente. Segurança de longo prazo.</div>', unsafe_allow_html=True)
     with r3:
-        st.markdown('<div class="regra-card" style="border-top-color: #93C5FD;"><h4>ESGOTAMENTO</h4>Foco nas parcelas iniciais da apólice, acelerando o retorno do lucro.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="regra-card" style="border-top-color: #93C5FD;"><h4>ESGOTAMENTO</h4>Antecipação total da receita concentrada nos meses iniciais da vigência.</div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # SIMULADOR SEM PLOTLY (USANDO MÉTRICAS E TABELAS DINÂMICAS)
+    # SIMULADOR INTELIGENTE (SEM PLOTLY)
     st.markdown('<div class="ebook-section">', unsafe_allow_html=True)
     st.subheader("Simulador de Engenharia Financeira")
     
     cs1, cs2 = st.columns([1, 2])
     with cs1:
-        valor_total = st.number_input("Comissão Total (R$)", value=3600.0, step=100.0)
-        regra_sel = st.selectbox("Regra de Fluxo", ["Total", "Parcelado", "Esgotamento"])
+        v_total = st.number_input("Comissão Total (R$)", value=4800.0, step=100.0)
+        regra_f = st.selectbox("Selecione a Regra", ["Total", "Parcelado", "Esgotamento"])
         
-        if regra_sel == "Esgotamento":
-            n_esg = st.number_input("Esgotar em quantos meses?", min_value=1, value=3)
-            vigencia = st.number_input("Vigência total (Meses)", min_value=n_esg, value=12)
+        if regra_f == "Esgotamento":
+            n_esg = st.number_input("Esgotar em quantos meses?", min_value=1, value=4)
+            vig = st.number_input("Vigência (Meses)", min_value=n_esg, value=12)
         else:
-            vigencia = st.number_input("Vigência total (Meses)", min_value=1, value=12)
+            vig = st.number_input("Vigência (Meses)", min_value=1, value=12)
             n_esg = 1
 
-    # Cálculos de Fluxo
-    fluxo_data = []
-    for m in range(1, vigencia + 1):
-        if regra_sel == "Total":
-            val = valor_total if m == 1 else 0
-        elif regra_sel == "Parcelado":
-            val = valor_total / vigencia
-        elif regra_sel == "Esgotamento":
-            val = valor_total / n_esg if m <= n_esg else 0
-        fluxo_data.append({"Mês": f"Mês {m}", "Recebimento": val})
+    # Cálculos
+    fluxo = []
+    for m in range(1, vig + 1):
+        if regra_f == "Total":
+            v = v_total if m == 1 else 0
+        elif regra_f == "Parcelado":
+            v = v_total / vig
+        else: # Esgotamento
+            v = v_total / n_esg if m <= n_esg else 0
+        fluxo.append({"Mês": f"Mês {m:02d}", "Recebimento": v, "Percentual": (v/v_total)*100})
 
-    df_fluxo = pd.DataFrame(fluxo_data)
+    df_f = pd.DataFrame(fluxo)
 
     with cs2:
-        # Exibição de Resumo de Caixa em cards
-        m1, m2 = st.columns(2)
-        with m1:
-            st.markdown(f'<div class="metric-box"><p class="metric-label">Entrada no 1º Mês</p><p class="metric-val">R$ {fluxo_data[0]["Recebimento"]:,.2f}</p></div>', unsafe_allow_html=True)
-        with m2:
-            avg = valor_total / vigencia
-            st.markdown(f'<div class="metric-box"><p class="metric-label">Média por Mês</p><p class="metric-val">R$ {avg:,.2f}</p></div>', unsafe_allow_html=True)
+        # Métricas Estilizadas
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            st.markdown(f'<div class="metric-card"><p class="metric-label">Entrada Inicial</p><p class="metric-val">R$ {fluxo[0]["Recebimento"]:,.2f}</p></div>', unsafe_allow_html=True)
+        with col_m2:
+            st.markdown(f'<div class="metric-card"><p class="metric-label">Período de Receita</p><p class="metric-val">{n_esg if regra_f=="Esgotamento" else (1 if regra_f=="Total" else vig)} Meses</p></div>', unsafe_allow_html=True)
         
         st.write("")
-        st.dataframe(df_fluxo, use_container_width=True, hide_index=True)
+        # Tabela com Gráfico Nativo (BarChartColumn)
+        st.data_editor(
+            df_f,
+            column_config={
+                "Recebimento": st.column_config.NumberColumn("Valor (R$)", format="R$ %.2f"),
+                "Percentual": st.column_config.BarChartColumn("Peso no Caixa (%)", y_min=0, y_max=100)
+            },
+            hide_index=True, use_container_width=True, disabled=True
+        )
     st.markdown('</div>', unsafe_allow_html=True)
 
 with tab4:
     st.markdown("""
     <div class="ebook-section">
         <h2 style="font-family: Montserrat;">Governança & Escala</h2>
-        <p>O corretor estratégico foca em 4 pilares para escalar os ganhos:</p>
+        <p>Entender a tabela é o primeiro passo. Escalar exige foco em 4 fatores que influenciam o valor final:</p>
         <ol>
-            <li><b>Volume:</b> Metas que geram bonificações progressivas.</li>
-            <li><b>Tipo de Apólice:</b> Seguros corporativos geram comissões robustas.</li>
-            <li><b>Negociação:</b> Experiência de mercado abre portas para percentuais diferenciados.</li>
-            <li><b>Tecnologia:</b> Automatizar a conferência para evitar perdas operacionais.</li>
+            <li><b>Volume de Produção:</b> Bonificações por metas atingidas junto às seguradoras.</li>
+            <li><b>Mix de Carteira:</b> Equilibrar produtos massificados (Auto) com alto valor agregado (Vida/Empresarial).</li>
+            <li><b>Negociação:</b> Corretores experientes com baixa sinistralidade negociam 'over-comission'.</li>
+            <li><b>Tecnologia:</b> A conferência automática evita perdas que chegam a 15% do faturamento anual.</li>
         </ol>
-        <p style="margin-top: 20px;"><b>Conclusão:</b> A comissão é o combustível, mas a gestão profissional é o motor do seu patrimônio.</p>
+        <p><i>"No mercado de alta performance, a comissão é o resultado de uma engenharia bem executada."</i></p>
     </div>
     """, unsafe_allow_html=True)
     
-    if st.button("FINALIZAR JORNADA"):
+    if st.button("FINALIZAR JORNADA E GERAR INSIGHTS"):
         st.balloons()
+        st.toast("E-book Master Concluído!", icon="💎")
 
 # --- FOOTER ---
 st.markdown("---")
-st.markdown('<p style="text-align: center; color: #475569; font-size: 0.8rem;">© 2026 | Gestão de Alta Performance para Corretores Profissionais</p>', unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; color: #475569; font-size: 0.8rem; letter-spacing: 1px;">© 2026 | INTELIGÊNCIA EM SEGUROS • PADRÃO PROFISSIONAL</p>', unsafe_allow_html=True)
